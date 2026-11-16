@@ -1,7 +1,7 @@
 import { FileDrop } from "./FileDrop";
 
 /**
- * Pantalla de bienvenida: se muestra mientras no hay ningún registro cargado.
+ * Bienvenida: es el contenido de Inicio mientras no hay ningún registro cargado.
  * Explica qué hace la app, ofrece la zona de carga y una guía para generar el CSV.
  */
 export interface WelcomeProps {
@@ -27,15 +27,7 @@ const STEPS = [
 
 export function Welcome({ onFile, loading, error }: WelcomeProps) {
   return (
-    <div className="welcome-page">
-      <header className="topbar">
-        <Brand />
-        <a className="topbar__link" href="#ayuda">
-          Ayuda
-        </a>
-      </header>
-
-      <main className="welcome">
+    <div className="welcome">
         <section className="welcome__hero">
           <h1>Descubre cómo se comporta tu computadora</h1>
           <p>
@@ -84,17 +76,7 @@ export function Welcome({ onFile, loading, error }: WelcomeProps) {
             <li>Pulsa el mismo botón para detener el registro y sube aquí el archivo.</li>
           </ol>
         </details>
-      </main>
     </div>
   );
 }
 
-/** Nombre de la app con su subtítulo. */
-export function Brand() {
-  return (
-    <div className="brand">
-      <strong>DiagPC</strong>
-      <span>Diagnóstico de hardware</span>
-    </div>
-  );
-}

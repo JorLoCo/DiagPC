@@ -14,6 +14,11 @@ export function formatDateTime(ms: number): string {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${formatClock(ms)}`;
 }
 
+/** Número con separadores en español y hasta `decimals` decimales, ej. 1234.5 → "1234,5". */
+export function formatNumber(value: number, decimals = 0): string {
+  return value.toLocaleString("es-ES", { maximumFractionDigits: decimals });
+}
+
 /** Segundos → "1 h 2 min 3 s", omitiendo las horas o minutos en cero. */
 export function formatDuration(seconds: number): string {
   const total = Math.round(seconds);
