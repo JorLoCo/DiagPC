@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DiagPC · Bienvenida</title>
+<!--
+  Prototipo estático de la pantalla de bienvenida (v1): se muestra cuando todavía
+  no hay ningún registro cargado. Usa los mismos colores que inicio.html.
+  La zona de carga simula los estados: arrastrando, leyendo, error y listo.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6f6;
+    --surface: #ffffff;
+    --surface-alt: #f6f8f8;
+    --border: #e3e8e7;
+    --border-strong: #c9d3d1;
+    --text: #17262b;
+    --text-muted: #55666b;
+    --text-subtle: #6b7a7e;
+    --accent: #1b7a5e;
+    --accent-hover: #166650;
+    --accent-soft: #e6f3ee;
+    --accent-text: #ffffff;
+    --crit: #b42318;
+    --crit-soft: #fde8e6;
+    --track: #e8eded;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(16, 32, 36, .04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1719;
+      --surface: #162124;
+      --surface-alt: #1b282b;
+      --border: #263639;
+      --border-strong: #3a4e52;
+      --text: #e4ecec;
+      --text-muted: #a3b3b5;
+      --text-subtle: #8b9c9f;
+      --accent: #3fb68f;
+      --accent-hover: #52c79f;
+      --accent-soft: #173a30;
+      --accent-text: #08140f;
+      --crit: #ff8a7e;
+      --crit-soft: #3d1d1a;
+      --track: #263639;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1719;
+    --surface: #162124;
+    --surface-alt: #1b282b;
+    --border: #263639;
+    --border-strong: #3a4e52;
+    --text: #e4ecec;
+    --text-muted: #a3b3b5;
+    --text-subtle: #8b9c9f;
+    --accent: #3fb68f;
+    --accent-hover: #52c79f;
+    --accent-soft: #173a30;
+    --accent-text: #08140f;
+    --crit: #ff8a7e;
+    --crit-soft: #3d1d1a;
+    --track: #263639;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Barra superior */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .brand strong { font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
+  .brand span { margin-left: 10px; font-size: 11px; color: var(--text-subtle); text-transform: uppercase; letter-spacing: .06em; }
+  .topbar a { color: var(--text-muted); text-decoration: none; font-weight: 500; }
+  .topbar a:hover { color: var(--text); }
+
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 56px 16px 40px;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+
+  /* Encabezado */
+  .hero { text-align: center; }
+  .hero h1 { margin: 0 0 10px; font-size: 32px; font-weight: 600; letter-spacing: -.025em; line-height: 1.2; }
+  .hero p { margin: 0 auto; max-width: 560px; color: var(--text-muted); font-size: 15px; }
+
+  /* Zona de carga */
+  .drop {
+    background: var(--surface);
+    border: 2px dashed var(--border-strong);
+    border-radius: 14px;
+    padding: 40px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .drop:hover, .drop:focus-visible { border-color: var(--accent); outline: none; }
+  .drop.is-over { border-color: var(--accent); background: var(--accent-soft); }
+  .drop.is-error { border-color: var(--crit); }
+  .drop-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: var(--accent-soft); color: var(--accent);
+    display: grid; place-items: center;
+  }
+  .drop.is-error .drop-icon { background: var(--crit-soft); color: var(--crit); }
+  .drop h2 { margin: 0; font-size: 17px; font-weight: 600; }
+  .drop p { margin: 0; color: var(--text-muted); }
+  .drop small { color: var(--text-subtle); font-size: 12px; }
+  .drop .error { color: var(--crit); font-weight: 500; }
+
+  .btn {
+    font: inherit; font-weight: 600;
+    border-radius: 8px; padding: 9px 18px;
+    cursor: pointer; white-space: nowrap;
+    background: var(--accent); color: var(--accent-text); border: 1px solid var(--accent);
+  }
+  .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+  .progress { width: 100%; max-width: 320px; height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
+  .progress > i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width .2s; }
+
+  .privacy {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: -14px;
+    color: var(--text-subtle); font-size: 13px;
+  }
+  .privacy svg { color: var(--accent); flex: none; }
+
+  /* Cómo funciona */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+  .step .num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    display: grid; place-items: center;
+    font-size: 13px; font-weight: 700; margin-bottom: 10px;
+  }
+  .step strong { display: block; font-weight: 600; margin-bottom: 4px; }
+  .step p { margin: 0; color: var(--text-muted); font-size: 13px; }
+
+  /* Ayuda para generar el CSV */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0 18px;
+  }
+  summary {
+    cursor: pointer; padding: 14px 0;
+    font-weight: 600;
+    list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-size: 18px; color: var(--text-subtle); font-weight: 400; }
+  details[open] summary::after { content: "−"; }
+  details ol { margin: 0 0 16px; padding-left: 20px; color: var(--text-muted); }
+  details li { margin-bottom: 6px; }
+  details li strong { color: var(--text); font-weight: 600; }
+
+  footer { text-align: center; color: var(--text-subtle); font-size: 12px; padding-bottom: 24px; }
+
+  @media (max-width: 640px) {
+    .topbar { padding: 12px 16px; }
+    .brand span { display: none; }
+    main { padding-top: 32px; }
+    .hero h1 { font-size: 26px; }
+    .steps { grid-template-columns: 1fr; }
+    .drop { padding: 32px 16px; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><strong>DiagPC</strong><span>Diagnóstico de hardware</span></div>
+    <a href="#ayuda">Ayuda</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Descubre cómo se comporta tu computadora</h1>
+      <p>Sube un registro de sensores de HWiNFO y DiagPC revisa temperaturas, uso y voltajes,
+         detecta problemas y te los explica en lenguaje sencillo.</p>
+    </section>
+
+    <!-- Zona de carga: su contenido cambia según el estado -->
+    <div class="drop" id="drop" role="button" tabindex="0" aria-label="Seleccionar archivo CSV de HWiNFO">
+      <div class="drop-icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+      </div>
+      <div id="drop-body">
+        <h2>Arrastra aquí tu archivo CSV</h2>
+        <p>o selecciónalo desde tu equipo</p>
+      </div>
+      <button class="btn" type="button" id="pick">Seleccionar archivo</button>
+      <small>Registro de sensores de HWiNFO en formato .csv</small>
+      <input type="file" id="file" accept=".csv" hidden>
+    </div>
+
+    <p class="privacy">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      El archivo se analiza en tu navegador y nunca sale de tu equipo.
+    </p>
+
+    <section class="steps" aria-label="Cómo funciona">
+      <article class="step">
+        <div class="num">1</div>
+        <strong>Sube el registro</strong>
+        <p>DiagPC lee el CSV y reconoce los sensores de tu procesador, gráfica, memoria y discos.</p>
+      </article>
+      <article class="step">
+        <div class="num">2</div>
+        <strong>Revisa el diagnóstico</strong>
+        <p>Reglas fijas buscan calor excesivo, pérdida de velocidad, memoria llena o voltajes inestables.</p>
+      </article>
+      <article class="step">
+        <div class="num">3</div>
+        <strong>Pregunta a la IA</strong>
+        <p>Un modelo local en LM Studio te explica qué significa cada hallazgo y qué puedes hacer.</p>
+      </article>
+    </section>
+
+    <details id="ayuda">
+      <summary>¿Cómo genero el registro en HWiNFO?</summary>
+      <ol>
+        <li>Abre <strong>HWiNFO</strong> y elige el modo <strong>Sensors-only</strong>.</li>
+        <li>En la ventana de sensores, pulsa el botón <strong>Logging start</strong> (el ícono de la hoja con un signo +, en la barra inferior).</li>
+        <li>Elige dónde guardar el archivo <strong>.csv</strong>.</li>
+        <li>Usa tu equipo con normalidad o ejecuta la prueba que quieras revisar (un juego, un render, etc.). Entre 10 y 30 minutos suele bastar.</li>
+        <li>Pulsa el mismo botón para detener el registro y sube aquí el archivo.</li>
+      </ol>
+    </details>
+  </main>
+
+  <footer>Prototipo v1 · DiagPC</footer>
+
+<script>
+  // Simulación de los estados de la zona de carga (solo para el prototipo).
+  const drop = document.getElementById("drop");
+  const body = document.getElementById("drop-body");
+  const input = document.getElementById("file");
+  const pick = document.getElementById("pick");
+  const initial = body.innerHTML;
+
+  const escapeHtml = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  function reset() {
+    drop.classList.remove("is-error", "is-over");
+    body.innerHTML = initial;
+    pick.hidden = false;
+  }
+
+  function showError(message) {
+    drop.classList.add("is-error");
+    body.innerHTML = `<h2>No se pudo leer el archivo</h2><p class="error">${message}</p>`;
+    pick.textContent = "Elegir otro archivo";
+    pick.hidden = false;
+  }
+
+  function handle(file) {
+    if (!file) return;
+    reset();
+    const name = escapeHtml(file.name);
+    if (!/\.csv$/i.test(file.name)) {
+      showError(`"${name}" no es un archivo CSV. Exporta el registro desde HWiNFO en formato .csv.`);
+      return;
+    }
+    pick.hidden = true;
+    body.innerHTML = `<h2>Leyendo ${name}…</h2><p>Esto puede tardar unos segundos si el registro es largo.</p>
+      <div class="progress" style="margin:12px auto 0"><i id="bar"></i></div>`;
+    const bar = document.getElementById("bar");
+    let p = 0;
+    const timer = setInterval(() => {
+      p = Math.min(100, p + 12);
+      bar.style.width = p + "%";
+      if (p === 100) {
+        clearInterval(timer);
+        // En la app real aquí se pasaría a la pantalla de inicio con el resumen.
+        location.href = "inicio.html";
+      }
+    }, 120);
+  }
+
+  pick.addEventListener("click", (e) => { e.stopPropagation(); input.click(); });
+  drop.addEventListener("click", () => input.click());
+  drop.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+  });
+  input.addEventListener("change", () => { handle(input.files[0]); input.value = ""; });
+
+  drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("is-over"); });
+  drop.addEventListener("dragleave", () => drop.classList.remove("is-over"));
+  drop.addEventListener("drop", (e) => {
+    e.preventDefault();
+    drop.classList.remove("is-over");
+    handle(e.dataTransfer.files[0]);
+  });
+</script>
+</body>
+</html>
