@@ -127,7 +127,7 @@ export function SensorChart({ log, summary }: SensorChartProps) {
           <Line
             type="monotone"
             dataKey="v"
-            stroke="#3b82f6"
+            stroke="var(--accent)"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
