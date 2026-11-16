@@ -1,0 +1,8 @@
+node_modules
+dist
+*.local
+.vscode/*
+!.vscode/extensions.json
+
+# Los CSV reales pueden ser grandes o personales: no se suben al repositorio.
+samples/*.[cC][sS][vV]
