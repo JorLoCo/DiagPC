@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DiagPC · Inicio</title>
+<!--
+  Prototipo estático de la pantalla de inicio (v1), basado en el diseño de Figma.
+  Los datos son de ejemplo. Sirve para comparar el diseño antes de pasarlo a React.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6f6;
+    --surface: #ffffff;
+    --surface-alt: #f6f8f8;
+    --border: #e3e8e7;
+    --text: #17262b;
+    --text-muted: #55666b;
+    --text-subtle: #6b7a7e;
+    --accent: #1b7a5e;
+    --accent-hover: #166650;
+    --accent-soft: #e6f3ee;
+    --accent-text: #ffffff;
+
+    --ok: #1b7a5e;
+    --ok-soft: #e6f3ee;
+    --warn: #9a6200;
+    --warn-bar: #d99a1e;
+    --warn-soft: #fdf3df;
+    --crit: #b42318;
+    --crit-bar: #d9443a;
+    --crit-soft: #fde8e6;
+    --track: #e8eded;
+
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(16, 32, 36, .04);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1719;
+      --surface: #162124;
+      --surface-alt: #1b282b;
+      --border: #263639;
+      --text: #e4ecec;
+      --text-muted: #a3b3b5;
+      --text-subtle: #8b9c9f;
+      --accent: #3fb68f;
+      --accent-hover: #52c79f;
+      --accent-soft: #173a30;
+      --accent-text: #08140f;
+      --ok: #5fcfa5;
+      --ok-soft: #173a30;
+      --warn: #f0b44c;
+      --warn-bar: #e0a43a;
+      --warn-soft: #3a2e14;
+      --crit: #ff8a7e;
+      --crit-bar: #ef6a5e;
+      --crit-soft: #3d1d1a;
+      --track: #263639;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1719;
+    --surface: #162124;
+    --surface-alt: #1b282b;
+    --border: #263639;
+    --text: #e4ecec;
+    --text-muted: #a3b3b5;
+    --text-subtle: #8b9c9f;
+    --accent: #3fb68f;
+    --accent-hover: #52c79f;
+    --accent-soft: #173a30;
+    --accent-text: #08140f;
+    --ok: #5fcfa5;
+    --ok-soft: #173a30;
+    --warn: #f0b44c;
+    --warn-bar: #e0a43a;
+    --warn-soft: #3a2e14;
+    --crit: #ff8a7e;
+    --crit-bar: #ef6a5e;
+    --crit-soft: #3d1d1a;
+    --track: #263639;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ---------- Barra lateral ---------- */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .brand { padding: 0 10px; }
+  .brand strong { display: block; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+  .brand span { font-size: 11px; color: var(--text-subtle); text-transform: uppercase; letter-spacing: .06em; }
+
+  .nav { display: flex; flex-direction: column; gap: 4px; }
+  .nav a {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 12px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .nav a:hover { background: var(--surface-alt); color: var(--text); }
+  .nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
+  .nav .count {
+    font-size: 11px; font-weight: 600;
+    min-width: 20px; padding: 1px 6px; border-radius: 10px;
+    background: var(--crit-soft); color: var(--crit); text-align: center;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .sidebar-footer a { padding: 7px 10px; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
+  .sidebar-footer a:hover { background: var(--surface-alt); color: var(--text); }
+  .llm-status { display: flex; align-items: center; gap: 8px; padding: 7px 10px; font-size: 12px; color: var(--text-subtle); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; }
+
+  /* ---------- Barra superior ---------- */
+  .main { min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap;
+  }
+  .file-chip {
+    display: flex; align-items: center; gap: 10px;
+    min-width: 0;
+  }
+  .file-chip .icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--accent-soft); color: var(--accent);
+    display: grid; place-items: center; flex: none;
+  }
+  .file-chip strong { display: block; font-weight: 600; }
+  .file-chip small { color: var(--text-subtle); font-size: 12px; }
+  .topbar .spacer { flex: 1; }
+  .search {
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 12px;
+    width: 220px;
+    font: inherit;
+  }
+  .search::placeholder { color: var(--text-subtle); }
+
+  .btn {
+    font: inherit; font-weight: 600;
+    border-radius: 8px;
+    padding: 9px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-text); border: 1px solid var(--accent); }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--surface-alt); }
+
+  /* ---------- Contenido ---------- */
+  .content {
+    padding: 32px;
+    display: flex; flex-direction: column; gap: 20px;
+    max-width: 1180px;
+    width: 100%;
+  }
+  .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .page-head h1 { margin: 0 0 4px; font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+  .page-head p { margin: 0; color: var(--text-muted); }
+
+  /* Franja de resumen del diagnóstico */
+  .verdict {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    background: var(--crit-soft);
+    border: 1px solid color-mix(in srgb, var(--crit) 25%, transparent);
+  }
+  .verdict .badge-icon {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--crit); color: var(--surface);
+    display: grid; place-items: center; font-weight: 700; flex: none;
+  }
+  .verdict strong { display: block; }
+  .verdict span { color: var(--text-muted); font-size: 13px; }
+  .verdict a { margin-left: auto; color: var(--crit); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .verdict a:hover { text-decoration: underline; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  /* Indicadores */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .kpi { padding: 18px; display: flex; flex-direction: column; gap: 6px; }
+  .kpi-label { color: var(--text-muted); font-size: 13px; display: flex; justify-content: space-between; gap: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .kpi-value small { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-left: 4px; }
+  .kpi-meta { font-size: 12px; color: var(--text-subtle); }
+  .bar { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; margin-top: 4px; }
+  .bar > i { display: block; height: 100%; border-radius: 3px; background: var(--ok); }
+  .bar.warn > i { background: var(--warn-bar); }
+  .bar.crit > i { background: var(--crit-bar); }
+  .is-warn { color: var(--warn); }
+  .is-crit { color: var(--crit); }
+
+  /* Secciones */
+  .section { padding: 20px 22px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .section-head h2 { margin: 0; font-size: 16px; font-weight: 600; }
+  .section-head small { color: var(--text-subtle); font-size: 12px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; align-items: start; }
+
+  /* Tabla de componentes */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-subtle);
+    background: var(--surface-alt);
+    padding: 9px 10px;
+  }
+  td { padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td .sub { display: block; font-size: 12px; color: var(--text-subtle); }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600;
+    padding: 3px 9px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.crit { background: var(--crit-soft); color: var(--crit); }
+
+  /* Hallazgos */
+  .findings { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .finding {
+    display: grid; grid-template-columns: 4px 1fr; gap: 12px;
+    padding: 12px 14px 12px 0;
+    border-radius: 8px;
+    background: var(--surface-alt);
+  }
+  .finding::before { content: ""; border-radius: 8px 0 0 8px; background: var(--ok); }
+  .finding.warn::before { background: var(--warn-bar); }
+  .finding.crit::before { background: var(--crit-bar); }
+  .finding strong { display: block; font-weight: 600; }
+  .finding p { margin: 2px 0 0; color: var(--text-muted); font-size: 13px; }
+  .finding .tag { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+  .finding.ok .tag { color: var(--ok); }
+  .finding.warn .tag { color: var(--warn); }
+  .finding.crit .tag { color: var(--crit); }
+  .findings-foot { margin-top: 14px; display: flex; }
+  .findings-foot .btn { width: 100%; }
+
+  /* Información del registro */
+  .info { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 24px; margin: 0; }
+  .info dt { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-subtle); margin-bottom: 3px; }
+  .info dd { margin: 0; font-weight: 500; overflow-wrap: anywhere; }
+
+  .proto-note { font-size: 12px; color: var(--text-subtle); text-align: center; padding: 4px 0 12px; }
+
+  /* ---------- Responsivo ---------- */
+  @media (max-width: 1100px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 820px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: static; height: auto;
+      flex-direction: row; align-items: center; flex-wrap: wrap;
+      padding: 12px 16px; gap: 12px;
+      border-right: 0; border-bottom: 1px solid var(--border);
+    }
+    .brand strong { font-size: 18px; }
+    .brand span { display: none; }
+    .nav { flex-direction: row; overflow-x: auto; width: 100%; }
+    .nav a { white-space: nowrap; gap: 6px; }
+    .sidebar-footer { display: none; }
+    .topbar { padding: 12px 16px; }
+    .search { width: 100%; order: 3; }
+    .content { padding: 20px 16px; }
+    .info { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .kpis { grid-template-columns: 1fr; }
+    .verdict { flex-wrap: wrap; }
+    .verdict a { margin-left: 44px; }
+    .page-head .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Barra lateral -->
+  <aside class="sidebar">
+    <div class="brand">
+      <strong>DiagPC</strong>
+      <span>Diagnóstico de hardware</span>
+    </div>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#" aria-current="page">Inicio</a>
+      <a href="#">Componentes</a>
+      <a href="#">Sensores</a>
+      <a href="#">Diagnóstico <span class="count" title="Hallazgos con aviso o crítico">2</span></a>
+      <a href="#">Registros</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="llm-status" title="Servidor local de LM Studio"><span class="dot"></span>LM Studio conectado</div>
+      <a href="#">Configuración</a>
+      <a href="#">Ayuda y soporte</a>
+    </div>
+  </aside>
+
+  <div class="main">
+    <!-- Barra superior: registro cargado -->
+    <header class="topbar">
+      <div class="file-chip">
+        <div class="icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+        </div>
+        <div>
+          <strong>actual.CSV</strong>
+          <small>Registro de HWiNFO · 42 min · 1.260 muestras</small>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <input class="search" type="search" placeholder="Buscar un sensor…" aria-label="Buscar un sensor">
+      <button class="btn btn-secondary" type="button">Cargar otro registro</button>
+    </header>
+
+    <main class="content">
+      <div class="page-head">
+        <div>
+          <h1>Tu computadora, de un vistazo</h1>
+          <p>Resumen del registro del 16 nov 2026, de 10:32 a 11:14.</p>
+        </div>
+        <button class="btn btn-primary" type="button">Explicar con IA</button>
+      </div>
+
+      <!-- Veredicto general -->
+      <section class="verdict" aria-label="Resultado del diagnóstico">
+        <div class="badge-icon" aria-hidden="true">!</div>
+        <div>
+          <strong>Se encontró 1 problema crítico y 1 aviso</strong>
+          <span>El procesador redujo su velocidad por temperatura durante la prueba.</span>
+        </div>
+        <a href="#hallazgos">Ver hallazgos</a>
+      </section>
+
+      <!-- Indicadores -->
+      <section class="kpis" aria-label="Indicadores principales">
+        <article class="card kpi">
+          <div class="kpi-label">Uso del procesador</div>
+          <div class="kpi-value">38 %<small>promedio</small></div>
+          <div class="bar" role="meter" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100" aria-label="Uso promedio del procesador"><i style="width:38%"></i></div>
+          <div class="kpi-meta">Máximo 100 % · AMD Ryzen 5 5600GT</div>
+        </article>
+        <article class="card kpi">
+          <div class="kpi-label">Temperatura del procesador <span class="pill crit">Crítico</span></div>
+          <div class="kpi-value is-crit">95 °C<small>máximo</small></div>
+          <div class="bar crit" role="meter" aria-valuenow="95" aria-valuemin="0" aria-valuemax="105" aria-label="Temperatura máxima del procesador"><i style="width:90%"></i></div>
+          <div class="kpi-meta">Promedio 71 °C · límite 95 °C</div>
+        </article>
+        <article class="card kpi">
+          <div class="kpi-label">Memoria RAM en uso <span class="pill warn">Aviso</span></div>
+          <div class="kpi-value is-warn">86 %<small>máximo</small></div>
+          <div class="bar warn" role="meter" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100" aria-label="Uso máximo de memoria"><i style="width:86%"></i></div>
+          <div class="kpi-meta">13,8 GB de 16 GB · promedio 61 %</div>
+        </article>
+        <article class="card kpi">
+          <div class="kpi-label">Uso de la gráfica</div>
+          <div class="kpi-value">22 %<small>promedio</small></div>
+          <div class="bar" role="meter" aria-valuenow="22" aria-valuemin="0" aria-valuemax="100" aria-label="Uso promedio de la gráfica"><i style="width:22%"></i></div>
+          <div class="kpi-meta">Máximo 64 % · Radeon Vega 7</div>
+        </article>
+      </section>
+
+      <div class="grid-2">
+        <!-- Componentes -->
+        <section class="card section">
+          <div class="section-head">
+            <h2>Componentes detectados</h2>
+            <small>6 componentes en el registro</small>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Componente</th>
+                  <th>Modelo</th>
+                  <th>Estado</th>
+                  <th>Temp. máx.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Procesador</td>
+                  <td>AMD Ryzen 5 5600GT<span class="sub">6 núcleos · 3,6–4,6 GHz</span></td>
+                  <td><span class="pill crit">Crítico</span></td>
+                  <td class="num is-crit">95 °C</td>
+                </tr>
+                <tr>
+                  <td>Memoria RAM</td>
+                  <td>16 GB DDR4<span class="sub">3200 MHz · 2 módulos</span></td>
+                  <td><span class="pill warn">Aviso</span></td>
+                  <td class="num">—</td>
+                </tr>
+                <tr>
+                  <td>Tarjeta gráfica</td>
+                  <td>AMD Radeon Vega 7<span class="sub">Integrada en el procesador</span></td>
+                  <td><span class="pill ok">Correcto</span></td>
+                  <td class="num">—</td>
+                </tr>
+                <tr>
+                  <td>Disco 1</td>
+                  <td>SSD NVMe · 500 GB<span class="sub">Unidad C:</span></td>
+                  <td><span class="pill ok">Correcto</span></td>
+                  <td class="num">48 °C</td>
+                </tr>
+                <tr>
+                  <td>Disco 2</td>
+                  <td>HDD SATA · 1 TB<span class="sub">Unidad D:</span></td>
+                  <td><span class="pill ok">Correcto</span></td>
+                  <td class="num">39 °C</td>
+                </tr>
+                <tr>
+                  <td>Placa base</td>
+                  <td>ASUS PRIME B550M-A<span class="sub">Voltaje +12 V: 11,98–12,10 V</span></td>
+                  <td><span class="pill ok">Correcto</span></td>
+                  <td class="num">41 °C</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Hallazgos -->
+        <section class="card section" id="hallazgos">
+          <div class="section-head">
+            <h2>Hallazgos</h2>
+            <small>Reglas sin IA</small>
+          </div>
+          <ul class="findings">
+            <li class="finding crit">
+              <div>
+                <span class="tag">Crítico</span>
+                <strong>El procesador bajó su velocidad por calor</strong>
+                <p>Thermal throttling activo durante 3 min 20 s. Llegó a 95 °C con uso del 100 %.</p>
+              </div>
+            </li>
+            <li class="finding warn">
+              <div>
+                <span class="tag">Aviso</span>
+                <strong>Memoria RAM casi llena</strong>
+                <p>Superó el 85 % de uso durante 6 min. Puede volver lento el equipo.</p>
+              </div>
+            </li>
+            <li class="finding ok">
+              <div>
+                <span class="tag">Correcto</span>
+                <strong>Voltajes estables</strong>
+                <p>Las líneas de +12 V, +5 V y +3,3 V se mantuvieron dentro del ±5 %.</p>
+              </div>
+            </li>
+          </ul>
+          <div class="findings-foot">
+            <button class="btn btn-secondary" type="button">Preguntar a la IA sobre esto</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Información del registro -->
+      <section class="card section">
+        <div class="section-head">
+          <h2>Información del registro</h2>
+          <span class="pill ok">Lectura sin errores</span>
+        </div>
+        <dl class="info">
+          <div><dt>Archivo</dt><dd>actual.CSV</dd></div>
+          <div><dt>Duración</dt><dd>42 min 0 s</dd></div>
+          <div><dt>Muestras</dt><dd>1.260 · cada 2 s</dd></div>
+          <div><dt>Sensores</dt><dd>214 columnas</dd></div>
+        </dl>
+      </section>
+
+      <p class="proto-note">Prototipo v1 · datos de ejemplo</p>
+    </main>
+  </div>
+</div>
+</body>
+</html>
